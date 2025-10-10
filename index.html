@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">    
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Student Finance Tracker</title>
+        <link rel="stylesheet" href="./styles/main.css">
+    </head>
+    <body>
+        <header>
+            <div class="header-text">
+                <h1>Student Finance Tracker</h1>
+            </div>
+            <nav role="navigation" aria-label="Main navigation">
+                <ul class="nav-links">
+                    <li><a href="#dashboard">Dashboard</a></li>
+                    <li><a href="#About">About</a></li>
+                    <li><a href="#transactions">Transactions</a></li>
+                    <li><a href="#Budget">Budget</a></li>
+                    <li><a href="#docs">Finance Analysis</a></li>
+                    <li><a href="#settings">Settings</a></li>
+                </ul>
+            </nav>
+        </header>
+        <main class="main-content">
+            <section>
+                <h1>Dashboard</h1>
+                <div class="dashboard-widgets">
+                    <!-- balance, income, expenses, charts -->
+                </div>
+            </section>
+
+            <!-- Records list: cards on mobile, table on desktop -->
+            <section>
+                <h2>Transactions</h2>
+                <div id="records-controls">
+                    <!-- search input, sort controls, regex toggle, filters -->
+                </div>
+                <div id="records-list">
+                    <!-- JS will render cards or table rows inside this container -->
+                </div>
+            </section>
+
+            <!-- Add / Edit form -->
+            <section>
+                <h2>Add / edit Transaction</h2>
+                <form id="transaction-form">
+                    <!-- form fields: description, amount, category, date -->
+                    <!-- validators.js will handle validation and inject error messages -->
+                </form>
+            </section>
+
+            <!-- recent transactions list -->
+            <section>
+                <h2>Recent transactions</h2>
+                <ul id="transaction-list"></ul>
+            </section>
+
+            <!-- about page -->
+            <section>
+                <h2>About</h2>
+                <p>This Student Finance Tracker helps you manage your finances effectively. You can add income and expenses, view your balance, and analyze your spending habits.</p>
+                <!-- my contacts(github,email) -->
+            </section>
+
+            <!-- budget page -->
+            <section>
+                <h2>Budget</h2>
+                <p>Set and track your budget to stay on top of your finances.</p>
+            </section>
+
+            <!-- finance analysis page with graphs-->
+            <section>
+                <h2>Finance Analysis</h2>
+                <p>Analyze your financial data with charts.</p>
+            </section>
+
+            <!-- settings -->
+            <section>
+                <h2>Settings</h2>
+                <p>Customize your experience and manage your account settings.</p>
+                <div class="settings-options">
+                    <!-- light modes, currecny converter -->
+                </div>
+            </section>
+        </main>
+        <footer>
+            <p>&copy; 2025 Student Finance Tracker</p>
+            <p>Created by Ineza Kevin</p>
+        </footer>
+    </body>
+</html>
