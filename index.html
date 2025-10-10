@@ -4,25 +4,39 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Student Finance Tracker</title>
-        <link rel="stylesheet" href="./styles/main.css">
+        <link rel="stylesheet" href="styles/main.css">
     </head>
     <body>
+        <!-- Skip link for keyboard users -->
+        <a href="#main-content" class="skip-link" style="position:absolute;left:-9999px;top:auto;"
+        onfocus="this.style.left='1rem'; this.style.top='1rem';" onblur="this.style.left='-9999px';">Skip to main content</a>
+
         <header>
-            <div class="header-text">
-                <h1>Student Finance Tracker</h1>
+
+            <div class="container">
+                <!-- Mobile Menu Button (only visible on small screens) -->
+                <button id="mobileMenuBtn" class="btn-icon" aria-label="Toggle navigation menu">
+                    <span class="icon-menu">☰</span>
+                    <span class="icon-close">✖</span>
+                </button>
+
+                <div class="Header-text">
+                    <h1>Student Finance Tracker</h1>
+                    <p>manage your finance effectively</p>
+                </div>
+                <nav role="navigation" aria-label="Main navigation">
+                    <ul class="nav-links">
+                        <li><a href="#dashboard">Dashboard</a></li>
+                        <li><a href="#About">About</a></li>
+                        <li><a href="#transactions">Transactions</a></li>
+                        <li><a href="#Budget">Budget</a></li>
+                        <li><a href="#docs">Finance Analysis</a></li>
+                        <li><a href="#settings">Settings</a></li>
+                    </ul>
+                </nav>
             </div>
-            <nav role="navigation" aria-label="Main navigation">
-                <ul class="nav-links">
-                    <li><a href="#dashboard">Dashboard</a></li>
-                    <li><a href="#About">About</a></li>
-                    <li><a href="#transactions">Transactions</a></li>
-                    <li><a href="#Budget">Budget</a></li>
-                    <li><a href="#docs">Finance Analysis</a></li>
-                    <li><a href="#settings">Settings</a></li>
-                </ul>
-            </nav>
         </header>
-        <main class="main-content">
+        <main class="container">
             <section>
                 <h1>Dashboard</h1>
                 <div class="dashboard-widgets">
@@ -84,7 +98,7 @@
                 </div>
             </section>
         </main>
-        <footer>
+        <footer class="container">
             <p>&copy; 2025 Student Finance Tracker</p>
             <p>Created by Ineza Kevin</p>
         </footer>
