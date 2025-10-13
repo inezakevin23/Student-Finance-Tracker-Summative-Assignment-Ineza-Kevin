@@ -50,17 +50,15 @@
             <section>
                 <h2>Transactions</h2>
                 <div id="records-controls">
-                    <!-- search input, sort controls, regex toggle, filters -->
+                    <input type="text" id="search-input" placeholder="Search transactions">
+                    <button id="search-btn" class="btn btn-outline">Search</button>
                 </div>
                 <div class="actions">
                     <button id="show-income-form" class="btn btn-primary">Add Income</button>
                     <button id="show-expense-form" class="btn btn-outline">Add Expense</button>
                 </div>
-                 <!-- Mobile: Cards -->
-                <div id="cardView" class="card-view"></div>
-
-                <!-- large screens: Table -->
-                <div id="tableView" class="table-view"></div>
+                <div id="cardView" class="transaction-cards"></div>
+                <div id="tableView" class="transaction-table"></div>
             </section>
             <!-- add income form -->
             <section id="add-income" class="section hidden">
@@ -139,7 +137,6 @@
             <p>&copy; 2025 Student Finance Tracker</p>
             <p>Created by Ineza Kevin</p>
         </footer>
-        <script src="scripts/state.js"></script>
-        <script src="scripts/ui.js"></script>
+        <script type="module" src="scripts/ui.js"></script>
     </body>
 </html>
