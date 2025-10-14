@@ -3,6 +3,7 @@ import {  filterAndHighlight } from './search.js';
 import { renderCategoryChart, renderBalanceChart } from './chart.js';
 import { state, loadSeedData, replaceTransactions, setCurrency, setExchangeRate } from './state.js';
 import { loadThemeFromLocalStorage, saveThemeToLocalStorage } from './storage.js';
+import { exportToJSON } from './storage.js';
 
 // --- Utility: Format amount in chosen currency ---
 function formatAmount(amount) {
