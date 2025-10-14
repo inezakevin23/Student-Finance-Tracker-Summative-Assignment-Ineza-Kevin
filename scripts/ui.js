@@ -1,8 +1,15 @@
 import records from './state.js';
 import {  filterAndHighlight } from './search.js';
 import { renderCategoryChart, renderBalanceChart } from './chart.js';
-import { state, loadSeedData, replaceTransactions } from './state.js';
+import { state, loadSeedData, replaceTransactions, setCurrency, setExchangeRate } from './state.js';
 
+// --- Utility: Format amount in chosen currency ---
+function formatAmount(amount) {
+    const currency = state.settings.preferredCurrency;
+    const symbol = state.settings.currencySymbols[currency] || currency;
+    const rate = state.settings.exchangeRates[currency] || 1;
+    return `${symbol} ${(amount * rate).toFixed(2)}`;
+}
 
 // --- Utility: Calculate stats from transactions ---
 function calculateStats(transactions) {
@@ -25,24 +32,17 @@ function renderStats(stats) {
     statsGrid.innerHTML = `
         <div class="stat-card">
             <h3>Balance</h3>
-            <p class="stat-value balance">$${stats.balance.toFixed(2)}</p>
+            <p class="stat-value balance">${formatAmount(stats.balance.toFixed(2))}</p>
         </div>
         <div class="stat-card">
             <h3>Income</h3>
-            <p class="stat-value income">$${stats.income.toFixed(2)}</p>
+            <p class="stat-value income">${formatAmount(stats.income.toFixed(2))}</p>
         </div>
         <div class="stat-card">
             <h3>Expenses</h3>
-            <p class="stat-value expense">$${stats.expenses.toFixed(2)}</p>
+            <p class="stat-value expense">${formatAmount(stats.expenses.toFixed(2))}</p>
         </div>
     `;
-}
-
-// display amount in prefered currency
-function formatAmount(amount) {
-    const currency = state.settings.preferredCurrency;
-    const rate = state.settings.exchangeRates[currency] || 1;
-    return `${currency} ${(amount * rate).toFixed(2)}`;
 }
 
 
@@ -53,7 +53,7 @@ function renderRecent(transactions) {
     list.innerHTML = '';
     transactions.slice(-7).reverse().forEach(tx => {
         const li = document.createElement('li');
-        li.textContent = `${tx.date}: ${tx.description} (${tx.category}) ${tx.type === 'income' ? '+' : '-'}$${tx.amount}`;
+        li.textContent = `${tx.date}: ${tx.description} (${tx.category}) ${tx.type === 'income' ? '+' : '-'}${formatAmount(tx.amount)}`;
         list.appendChild(li);
     });
 }
@@ -331,7 +331,7 @@ function renderCards(transactions, highlight) {
             <div class="card-header">
                 <span class="badge ${tx.type}">${tx.type}</span>
                 <span class="card-amount ${tx.type}">
-                    ${tx.type === 'income' ? '+' : '-'}$${tx.amount.toFixed(2)}
+                    ${tx.type === 'income' ? '+' : '-'}${formatAmount(tx.amount.toFixed(2))}
                 </span>
             </div>
             <div class="card-description">${highlight(tx.description)}</div>
@@ -383,7 +383,7 @@ function renderTable(transactions, highlight) {
                 </td>
                 <td>
                     <span class="table-amount ${tx.type}">
-                        ${tx.type === 'income' ? '+' : '-'}$${tx.amount.toFixed(2)}
+                        ${tx.type === 'income' ? '+' : '-'}${formatAmount(tx.amount.toFixed(2))}
                     </span>
                 </td>
                 <td>
@@ -453,6 +453,40 @@ function setupImportExport(updateUI) {
   };
 }
 
+// --- Settings: Currency change and manual exchange rates ---
+function setupCurrencySettings(updateUI) {
+    const curSelect = document.getElementById('currencySelect');
+    // Populate dropdown if needed
+    if (curSelect) {
+        curSelect.innerHTML = state.settings.availableCurrencies
+            .map(c => `<option value="${c}" ${state.settings.preferredCurrency === c ? "selected" : ""}>${c}</option>`).join('');
+        curSelect.onchange = function(e) {
+            setCurrency(e.target.value);
+            updateUI();
+        };
+    }
+    // Manual rate inputs
+    const rateContainer = document.getElementById('manualRates');
+    if (rateContainer) {
+        rateContainer.innerHTML = state.settings.availableCurrencies.map(currency => {
+            return `
+            <div>
+                <label>${currency} rate:</label>
+                <input type="number" step="0.01" min="0.01" id="rate-${currency}" value="${state.settings.exchangeRates[currency]}">
+            </div>
+            `;
+        }).join('');
+        state.settings.availableCurrencies.forEach(currency => {
+            const input = document.getElementById(`rate-${currency}`);
+            if (input) {
+                input.onchange = (e) => {
+                    setExchangeRate(currency, parseFloat(e.target.value));
+                    updateUI();
+                };
+            }
+        });
+    }
+}
 
 // --- Main UI initialization ---
 document.addEventListener('DOMContentLoaded', async function () {
@@ -468,6 +502,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     setupForms(updateUI);
     setupSearchAndSort(updateUI);
     setupImportExport(updateUI);
+    setupCurrencySettings(updateUI);
 
     function updateUI() {
         let txs = records.getTransactions();
@@ -475,15 +510,11 @@ document.addEventListener('DOMContentLoaded', async function () {
         const caseBox = document.getElementById('search-case');
         const pattern = searchInput ? searchInput.value : '';
         const caseInsensitive = caseBox ? caseBox.checked : true;
-
-        // if (searchInput && searchInput.value.trim()) {
-        //     txs = filterTransactions(txs, searchInput.value.trim());
-        // }
-         const { filtered, highlight } = filterAndHighlight(txs, pattern, caseInsensitive);
+        const { filtered, highlight } = filterAndHighlight(txs, pattern, caseInsensitive);
 
         // Sorting
         const sortSelect = document.getElementById('sort-select');
-        const sortDirBtn = document.getElementById('sortDir');
+        // const sortDirBtn = document.getElementById('sortDir');
         let sortKey = 'date', sortDir = 'desc';
         if (sortSelect) {
             let val = sortSelect.value;
@@ -501,6 +532,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         renderBalanceChart(txs);
         renderRecent(txs);
         setupTransactionActions(txs, updateUI);
+        setupCurrencySettings(updateUI);
     }
 
     records.subscribe(updateUI);

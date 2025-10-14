@@ -5,9 +5,21 @@ export let state = {
   settings: {
     preferredCurrency: 'USD',
     availableCurrencies: ['USD', 'RWF', 'UGX'],
+    currencySymbols: { USD: '$', RWF: 'FRw', UGX: 'USh' },
     exchangeRates: { USD: 1, RWF: 1447.50, UGX: 3465.23 }
   }
 };
+
+export function setCurrency(currency) {
+  if (state.settings.availableCurrencies.includes(currency)) {
+    state.settings.preferredCurrency = currency;
+    saveToLocalStorage(state.transactions);
+  }
+}
+
+export function setExchangeRate(currency, rate) {
+  state.settings.exchangeRates[currency] = rate;
+}
 
 // Load initial data: try localStorage, fallback to seed.json
 export async function loadSeedData() {
@@ -32,7 +44,7 @@ const records = (function () {
   let listeners = [];
     
   function notify() {
-    saveToLocalStorage(transactions); // Always save changes!
+    saveToLocalStorage(transactions);
     listeners.forEach(listener => listener(transactions));
   }
   function generateId() {
@@ -82,52 +94,6 @@ export function replaceTransactions(newArr) {
   state.transactions = newArr;
   records.initFromState();
 }
-
-
-
-// import { loadFromLocalStorage, saveToLocalStorage } from './storage.js';
-
-// export let state = {
-// transactions: [],
-//   settings: {
-//     preferredCurrency: 'USD',
-//     availableCurrencies: ['USD', 'RWF', 'UGX'],
-//     exchangeRates: { USD: 1, RWF: 1447.50, UGX: 3465.23 }
-//   }
-// };
-
-// // Load seed.json data into state
-// export async function loadSeedData() {
-//   try {
-//     const res = await fetch('./seed.json');
-//     const data = await res.json();
-//     state.transactions = Array.isArray(data) ? data : data.transactions || [];
-//   } catch (err) {
-//     console.error("Failed to load seed.json:", err);
-//   }
-// }
-
-
-// // Module pattern for state management
-// const records = (function () {
-//   let transactions = [];
-//   let listeners = [];
-    
-//   function notify() {
-//     listeners.forEach(listener => listener(transactions));
-//   }
-//   function generateId() {
-//     const maxId = transactions.reduce((max, t) => Math.max(max, parseInt(t.id || 0)), 0);
-//     return (maxId + 1).toString();    
-//   }
-    
-//   function initFromState() {
-//     transactions = state.transactions.map((t, i) => ({
-//       ...t,
-//       id: t.id || (i + 1).toString()
-//       }));
-//     notify();
-//   }
 
 //   // function getCurrentTimestamp() {
 //   //     return new Date().toISOString().slice(0, 10);
