@@ -38,116 +38,20 @@ function renderStats(stats) {
     `;
 }
 
-// // display amount in prefered currency
-// function formatAmount(amount) {
-//     const currency = state.settings.preferredCurrency;
-//     const rate = state.settings.exchangeRates[currency] || 1;
-//     return `${currency} ${(amount * rate).toFixed(2)}`;
-// }
+// display amount in prefered currency
+function formatAmount(amount) {
+    const currency = state.settings.preferredCurrency;
+    const rate = state.settings.exchangeRates[currency] || 1;
+    return `${currency} ${(amount * rate).toFixed(2)}`;
+}
 
-
-// // --- Render transactions as cards (mobile) ---
-// function renderCards(transactions) {
-//     const container = document.getElementById('cardView');
-//     if (!container) return;
-//     if (transactions.length === 0) {
-//         container.innerHTML = `
-//             <div class="empty-state">
-//                 <div class="empty-state-icon">📭</div>
-//                 <p>No transactions yet</p>
-//             </div>
-//         `;
-//         return;
-//     }
-//     container.innerHTML = '';
-//     transactions.forEach(tx => {
-//         const card = document.createElement('div');
-//         card.className = `transaction-card ${tx.type}`;
-//         card.innerHTML = `
-//             <div class="card-header">
-//                 <span class="badge ${tx.type}">${tx.type}</span>
-//                 <span class="card-amount ${tx.type}">
-//                     ${tx.type === 'income' ? '+' : '-'}$${tx.amount.toFixed(2)}
-//                 </span>
-//             </div>
-//             <div class="card-description">${tx.description}</div>
-//             <div class="card-meta">
-//                 <span>📁 ${tx.category || ''}</span>
-//                 <span>📅 ${tx.date}</span>
-//                 <span>🆔 ${tx.id || ''}</span>
-//             </div>
-//             <div class="card-actions">
-//                 <button class="btn btn-edit" data-id="${tx.id}">✏️ Edit</button>
-//                 <button class="btn btn-delete" data-id="${tx.id}">🗑️ Delete</button>
-//             </div>
-//         `;
-//         container.appendChild(card);
-//     });
-// }
-
-// // --- Render transactions as table (desktop) ---
-// function renderTable(transactions) {
-//     const container = document.getElementById('tableView');
-//     if (!container) return;
-//     if (transactions.length === 0) {
-//         container.innerHTML = `
-//             <div class="empty-state">
-//                 <div class="empty-state-icon">📭</div>
-//                 <p>No transactions yet</p>
-//             </div>
-//         `;
-//         return;
-//     }
-//     let tableHTML = `
-//         <table>
-//             <thead>
-//                 <tr>
-//                     <th>ID</th>
-//                     <th>Date</th>
-//                     <th>Description</th>
-//                     <th>Category</th>
-//                     <th>Type</th>
-//                     <th>Amount</th>
-//                     <th>Actions</th>
-//                 </tr>
-//             </thead>
-//             <tbody>
-//     `;
-//     transactions.forEach(tx => {
-//         tableHTML += `
-//             <tr>
-//                 <td>${tx.id || ''}</td>
-//                 <td>${tx.date}</td>
-//                 <td><strong>${tx.description}</strong></td>
-//                 <td>📁 ${tx.category || ''}</td>
-//                 <td>
-//                     <span class="badge ${tx.type}">${tx.type}</span>
-//                 </td>
-//                 <td>
-//                     <span class="table-amount ${tx.type}">
-//                         ${tx.type === 'income' ? '+' : '-'}$${tx.amount.toFixed(2)}
-//                     </span>
-//                 </td>
-//                 <td>
-//                     <button class="btn btn-edit" data-id="${tx.id}">✏️</button>
-//                     <button class="btn btn-delete" data-id="${tx.id}">🗑️</button>
-//                 </td>
-//             </tr>
-//         `;
-//     });
-//     tableHTML += `
-//             </tbody>
-//         </table>
-//     `;
-//     container.innerHTML = tableHTML;
-// }
 
 // --- Render recent transactions ---
 function renderRecent(transactions) {
     const list = document.getElementById('transaction-list');
     if (!list) return;
     list.innerHTML = '';
-    transactions.slice(-5).reverse().forEach(tx => {
+    transactions.slice(-7).reverse().forEach(tx => {
         const li = document.createElement('li');
         li.textContent = `${tx.date}: ${tx.description} (${tx.category}) ${tx.type === 'income' ? '+' : '-'}$${tx.amount}`;
         list.appendChild(li);
@@ -391,17 +295,6 @@ function setupForms(updateUI) {
     };
 }
 
-// // --- Search Logic ---
-// function setupSearch(updateUI) {
-//     const searchInput = document.getElementById('search-input');
-//     let lastSearch = '';
-//     function doSearch() {
-//         lastSearch = searchInput.value.trim();
-//         updateUI();
-//     }
-//     searchInput.oninput = doSearch;
-// }
-
 // --- Sorting helper ---
 function sortTransactions(transactions, sortKey, sortDir) {
     let sorted = [...transactions];
@@ -566,6 +459,11 @@ document.addEventListener('DOMContentLoaded', async function () {
     setupMenuToggle();
     await loadSeedData();
     records.initFromState();
+    // Update UI when user selects a new currency
+    document.getElementById('currencySelect').onchange = function(e) {
+    updateCurrency(e.target.value);
+    updateUI(); // refresh all amounts
+    }
 
     setupForms(updateUI);
     setupSearchAndSort(updateUI);
@@ -601,6 +499,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         renderTable(txs, highlight);
         renderCategoryChart(txs);
         renderBalanceChart(txs);
+        renderRecent(txs);
         setupTransactionActions(txs, updateUI);
     }
 
