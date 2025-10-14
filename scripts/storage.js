@@ -1,6 +1,8 @@
 import { validateRecord, validateRecordsArray } from './validators.js';
 
 const STORAGE_KEY = 'finance-tracker:data';
+const SETTINGS_KEY = 'finance-tracker:settings';
+const THEME_KEY = 'finance-tracker:theme';
 
 // Load array of records from localStorage, or null if not present
 export function loadFromLocalStorage() {
@@ -14,6 +16,32 @@ export function loadFromLocalStorage() {
     console.error('Failed to load data from localStorage:', err);
     return null;
   }
+}
+
+// --- Currency Settings ---
+export function loadSettingsFromLocalStorage() {
+  try {
+    const raw = localStorage.getItem(SETTINGS_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch (err) {
+    return null;
+  }
+}
+export function saveSettingsToLocalStorage(settings) {
+  try {
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+  } catch (err) {
+    console.error('Failed to save settings to localStorage:', err);
+  }
+}
+
+// --- Theme ---
+export function loadThemeFromLocalStorage() {
+  return localStorage.getItem(THEME_KEY) || 'light';
+}
+export function saveThemeToLocalStorage(theme) {
+  localStorage.setItem(THEME_KEY, theme);
 }
 
 // Save array of records to localStorage

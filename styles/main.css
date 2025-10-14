@@ -52,6 +52,11 @@ body {
     padding-bottom: var(--space-5);
 }
 
+body.theme-dark {
+    background-color: #181818;
+    color: #e4cfae;
+}
+
 /* Visually hidden helper for a11y */
 .sr-only {
     position: absolute;

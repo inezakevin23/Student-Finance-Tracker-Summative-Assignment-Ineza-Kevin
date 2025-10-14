@@ -1,4 +1,4 @@
-import { loadFromLocalStorage, saveToLocalStorage } from './storage.js';
+import { loadFromLocalStorage, saveToLocalStorage, loadSettingsFromLocalStorage, saveSettingsToLocalStorage } from './storage.js';
 
 export let state = {
   transactions: [],
@@ -10,19 +10,32 @@ export let state = {
   }
 };
 
+function persistSettings() {
+  saveSettingsToLocalStorage(state.settings);
+}
+
 export function setCurrency(currency) {
   if (state.settings.availableCurrencies.includes(currency)) {
     state.settings.preferredCurrency = currency;
-    saveToLocalStorage(state.transactions);
+    persistSettings();
   }
 }
 
 export function setExchangeRate(currency, rate) {
   state.settings.exchangeRates[currency] = rate;
+  persistSettings();
+}
+
+export function loadPersistedSettings() {
+  const stored = loadSettingsFromLocalStorage();
+  if (stored) {
+    state.settings = { ...state.settings, ...stored };
+  }
 }
 
 // Load initial data: try localStorage, fallback to seed.json
 export async function loadSeedData() {
+  loadPersistedSettings();
   let localData = loadFromLocalStorage();
   if (localData && Array.isArray(localData)) {
     state.transactions = localData;

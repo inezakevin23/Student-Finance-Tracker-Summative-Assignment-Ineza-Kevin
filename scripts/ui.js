@@ -2,6 +2,7 @@ import records from './state.js';
 import {  filterAndHighlight } from './search.js';
 import { renderCategoryChart, renderBalanceChart } from './chart.js';
 import { state, loadSeedData, replaceTransactions, setCurrency, setExchangeRate } from './state.js';
+import { loadThemeFromLocalStorage, saveThemeToLocalStorage } from './storage.js';
 
 // --- Utility: Format amount in chosen currency ---
 function formatAmount(amount) {
@@ -9,6 +10,24 @@ function formatAmount(amount) {
     const symbol = state.settings.currencySymbols[currency] || currency;
     const rate = state.settings.exchangeRates[currency] || 1;
     return `${symbol} ${(amount * rate).toFixed(2)}`;
+}
+
+// --- Theme helpers ---
+function applyTheme(theme) {
+    document.body.classList.remove('theme-dark', 'theme-light');
+    document.body.classList.add(theme === 'dark' ? 'theme-dark' : 'theme-light');
+    saveThemeToLocalStorage(theme);
+}
+function setupThemeToggle() {
+    const btn = document.getElementById('themeToggle');
+    if (!btn) return;
+    // Initial theme
+    const initialTheme = loadThemeFromLocalStorage();
+    applyTheme(initialTheme);
+    btn.onclick = () => {
+        const newTheme = document.body.classList.contains('theme-dark') ? 'light' : 'dark';
+        applyTheme(newTheme);
+    };
 }
 
 // --- Utility: Calculate stats from transactions ---
@@ -456,7 +475,6 @@ function setupImportExport(updateUI) {
 // --- Settings: Currency change and manual exchange rates ---
 function setupCurrencySettings(updateUI) {
     const curSelect = document.getElementById('currencySelect');
-    // Populate dropdown if needed
     if (curSelect) {
         curSelect.innerHTML = state.settings.availableCurrencies
             .map(c => `<option value="${c}" ${state.settings.preferredCurrency === c ? "selected" : ""}>${c}</option>`).join('');
@@ -491,6 +509,7 @@ function setupCurrencySettings(updateUI) {
 // --- Main UI initialization ---
 document.addEventListener('DOMContentLoaded', async function () {
     setupMenuToggle();
+    setupThemeToggle();
     await loadSeedData();
     records.initFromState();
     // Update UI when user selects a new currency
