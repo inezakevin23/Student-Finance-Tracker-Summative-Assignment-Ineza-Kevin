@@ -1,5 +1,8 @@
 import records from './state.js';
-import { filterTransactions } from './search.js';
+import {  filterAndHighlight } from './search.js';
+import { renderCategoryChart, renderBalanceChart } from './chart.js';
+import { state, loadSeedData, replaceTransactions } from './state.js';
+
 
 // --- Utility: Calculate stats from transactions ---
 function calculateStats(transactions) {
@@ -35,101 +38,109 @@ function renderStats(stats) {
     `;
 }
 
-// --- Render transactions as cards (mobile) ---
-function renderCards(transactions) {
-    const container = document.getElementById('cardView');
-    if (!container) return;
-    if (transactions.length === 0) {
-        container.innerHTML = `
-            <div class="empty-state">
-                <div class="empty-state-icon">📭</div>
-                <p>No transactions yet</p>
-            </div>
-        `;
-        return;
-    }
-    container.innerHTML = '';
-    transactions.forEach(tx => {
-        const card = document.createElement('div');
-        card.className = `transaction-card ${tx.type}`;
-        card.innerHTML = `
-            <div class="card-header">
-                <span class="badge ${tx.type}">${tx.type}</span>
-                <span class="card-amount ${tx.type}">
-                    ${tx.type === 'income' ? '+' : '-'}$${tx.amount.toFixed(2)}
-                </span>
-            </div>
-            <div class="card-description">${tx.description}</div>
-            <div class="card-meta">
-                <span>📁 ${tx.category || ''}</span>
-                <span>📅 ${tx.date}</span>
-                <span>🆔 ${tx.id || ''}</span>
-            </div>
-            <div class="card-actions">
-                <button class="btn btn-edit" data-id="${tx.id}">✏️ Edit</button>
-                <button class="btn btn-delete" data-id="${tx.id}">🗑️ Delete</button>
-            </div>
-        `;
-        container.appendChild(card);
-    });
-}
+// // display amount in prefered currency
+// function formatAmount(amount) {
+//     const currency = state.settings.preferredCurrency;
+//     const rate = state.settings.exchangeRates[currency] || 1;
+//     return `${currency} ${(amount * rate).toFixed(2)}`;
+// }
 
-// --- Render transactions as table (desktop) ---
-function renderTable(transactions) {
-    const container = document.getElementById('tableView');
-    if (!container) return;
-    if (transactions.length === 0) {
-        container.innerHTML = `
-            <div class="empty-state">
-                <div class="empty-state-icon">📭</div>
-                <p>No transactions yet</p>
-            </div>
-        `;
-        return;
-    }
-    let tableHTML = `
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Date</th>
-                    <th>Description</th>
-                    <th>Category</th>
-                    <th>Type</th>
-                    <th>Amount</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-    `;
-    transactions.forEach(tx => {
-        tableHTML += `
-            <tr>
-                <td>${tx.id || ''}</td>
-                <td>${tx.date}</td>
-                <td><strong>${tx.description}</strong></td>
-                <td>📁 ${tx.category || ''}</td>
-                <td>
-                    <span class="badge ${tx.type}">${tx.type}</span>
-                </td>
-                <td>
-                    <span class="table-amount ${tx.type}">
-                        ${tx.type === 'income' ? '+' : '-'}$${tx.amount.toFixed(2)}
-                    </span>
-                </td>
-                <td>
-                    <button class="btn btn-edit" data-id="${tx.id}">✏️</button>
-                    <button class="btn btn-delete" data-id="${tx.id}">🗑️</button>
-                </td>
-            </tr>
-        `;
-    });
-    tableHTML += `
-            </tbody>
-        </table>
-    `;
-    container.innerHTML = tableHTML;
-}
+
+// // --- Render transactions as cards (mobile) ---
+// function renderCards(transactions) {
+//     const container = document.getElementById('cardView');
+//     if (!container) return;
+//     if (transactions.length === 0) {
+//         container.innerHTML = `
+//             <div class="empty-state">
+//                 <div class="empty-state-icon">📭</div>
+//                 <p>No transactions yet</p>
+//             </div>
+//         `;
+//         return;
+//     }
+//     container.innerHTML = '';
+//     transactions.forEach(tx => {
+//         const card = document.createElement('div');
+//         card.className = `transaction-card ${tx.type}`;
+//         card.innerHTML = `
+//             <div class="card-header">
+//                 <span class="badge ${tx.type}">${tx.type}</span>
+//                 <span class="card-amount ${tx.type}">
+//                     ${tx.type === 'income' ? '+' : '-'}$${tx.amount.toFixed(2)}
+//                 </span>
+//             </div>
+//             <div class="card-description">${tx.description}</div>
+//             <div class="card-meta">
+//                 <span>📁 ${tx.category || ''}</span>
+//                 <span>📅 ${tx.date}</span>
+//                 <span>🆔 ${tx.id || ''}</span>
+//             </div>
+//             <div class="card-actions">
+//                 <button class="btn btn-edit" data-id="${tx.id}">✏️ Edit</button>
+//                 <button class="btn btn-delete" data-id="${tx.id}">🗑️ Delete</button>
+//             </div>
+//         `;
+//         container.appendChild(card);
+//     });
+// }
+
+// // --- Render transactions as table (desktop) ---
+// function renderTable(transactions) {
+//     const container = document.getElementById('tableView');
+//     if (!container) return;
+//     if (transactions.length === 0) {
+//         container.innerHTML = `
+//             <div class="empty-state">
+//                 <div class="empty-state-icon">📭</div>
+//                 <p>No transactions yet</p>
+//             </div>
+//         `;
+//         return;
+//     }
+//     let tableHTML = `
+//         <table>
+//             <thead>
+//                 <tr>
+//                     <th>ID</th>
+//                     <th>Date</th>
+//                     <th>Description</th>
+//                     <th>Category</th>
+//                     <th>Type</th>
+//                     <th>Amount</th>
+//                     <th>Actions</th>
+//                 </tr>
+//             </thead>
+//             <tbody>
+//     `;
+//     transactions.forEach(tx => {
+//         tableHTML += `
+//             <tr>
+//                 <td>${tx.id || ''}</td>
+//                 <td>${tx.date}</td>
+//                 <td><strong>${tx.description}</strong></td>
+//                 <td>📁 ${tx.category || ''}</td>
+//                 <td>
+//                     <span class="badge ${tx.type}">${tx.type}</span>
+//                 </td>
+//                 <td>
+//                     <span class="table-amount ${tx.type}">
+//                         ${tx.type === 'income' ? '+' : '-'}$${tx.amount.toFixed(2)}
+//                     </span>
+//                 </td>
+//                 <td>
+//                     <button class="btn btn-edit" data-id="${tx.id}">✏️</button>
+//                     <button class="btn btn-delete" data-id="${tx.id}">🗑️</button>
+//                 </td>
+//             </tr>
+//         `;
+//     });
+//     tableHTML += `
+//             </tbody>
+//         </table>
+//     `;
+//     container.innerHTML = tableHTML;
+// }
 
 // --- Render recent transactions ---
 function renderRecent(transactions) {
@@ -167,7 +178,21 @@ function setupMenuToggle() {
     });
 }
 
-// --- Form UI helpers ---
+// // Smooth scroll for navigation
+// function navLinks () {
+//     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+//   anchor.addEventListener("click", function (e) {
+//     e.preventDefault();
+//     const target = document.querySelector(this.getAttribute("href"));
+//     if (target) {
+//       target.scrollIntoView({ behavior: "smooth" });
+//       navMenu.classList.remove("active");
+//     }
+//   });
+// });
+// }
+
+// --- show/hide section ---
 function showSection(id) {
     document.querySelectorAll('.section').forEach(section => {
         section.classList.add('hidden');
@@ -203,16 +228,116 @@ function setupTransactionActions(transactions, updateUI) {
     });
 }
 
-// --- Main UI initialization ---
-document.addEventListener('DOMContentLoaded', function () {
-    setupMenuToggle();
 
-    // Set up forms
+// // --- Main UI initialization ---
+// document.addEventListener('DOMContentLoaded', async function () {
+//     setupMenuToggle();
+//     navLinks();
+//     // 1. Load seed.json
+//     await loadSeedData(); 
+//     records.initFromState(); 
+//     // Update UI when user selects a new currency
+//     document.getElementById('currencySelect').onchange = function(e) {
+//     updateCurrency(e.target.value);
+//     updateUI(); // refresh all amounts
+ 
+
+//     // Set up forms
+//     document.getElementById('show-income-form').onclick = () => showSection('add-income');
+//     document.getElementById('show-expense-form').onclick = () => showSection('add-expense');
+//     document.getElementById('cancel-income').onclick = () => showSection('');
+//     document.getElementById('cancel-expense').onclick = () => showSection('');
+//     document.getElementById('cancel-edit').onclick = () => showSection('');
+
+//     document.getElementById('incomeForm').onsubmit = function (e) {
+//         e.preventDefault();
+//         const form = e.target;
+//         try {
+//             records.addTransaction({
+//                 type: 'income',
+//                 amount: parseFloat(form.amount.value),
+//                 category: form.category.value,
+//                 description: form.description.value
+//             });
+//             form.reset();
+//             showSection('');
+//         } catch (err) {
+//             alert(err.message);
+//         }
+//     };
+
+//     document.getElementById('expenseForm').onsubmit = function (e) {
+//         e.preventDefault();
+//         const form = e.target;
+//         try {
+//             records.addTransaction({
+//                 type: 'expense',
+//                 amount: parseFloat(form.amount.value),
+//                 category: form.category.value,
+//                 description: form.description.value
+//             });
+//             form.reset();
+//             showSection('');
+//         } catch (err) {
+//             alert(err.message);
+//         }
+//     };
+
+//     document.getElementById('editForm').onsubmit = function (e) {
+//         e.preventDefault();
+//         const form = e.target;
+//         try {
+//             records.updateTransaction({
+//                 id: form.id.value,
+//                 description: form.description.value,
+//                 amount: parseFloat(form.amount.value),
+//                 category: form.category.value,
+//                 type: form.type.value
+//             });
+//             showSection('');
+//         } catch (err) {
+//             alert(err.message);
+//         }
+//     };
+
+//     // Search/filter/sort
+//     const searchInput = document.createElement('input');
+//     searchInput.type = 'text';
+//     searchInput.placeholder = 'Search description/category...';
+//     searchInput.id = 'search-input';
+//     document.getElementById('records-controls').appendChild(searchInput);
+
+//     let currentFilter = '';
+//     searchInput.oninput = function () {
+//         currentFilter = searchInput.value;
+//         updateUI();
+//     };
+
+//     function updateUI() {
+//         let txs = records.getTransactions();
+//         if (currentFilter) {
+//             txs = filterTransactions(txs, currentFilter);
+//         }
+//         renderStats(calculateStats(txs));
+//         renderCards(txs);
+//         renderTable(txs);
+//         renderRecent(txs);
+//         renderBalanceChart(txs);
+//         renderCategoryChart(txs);
+//         setupTransactionActions(txs, updateUI);
+//     }
+
+//     records.subscribe(updateUI);
+//     updateUI();
+// }});
+
+// --- Forms: Add Income/Expense ---
+function setupForms(updateUI) {
     document.getElementById('show-income-form').onclick = () => showSection('add-income');
     document.getElementById('show-expense-form').onclick = () => showSection('add-expense');
-    document.getElementById('cancel-income').onclick = () => showSection('');
-    document.getElementById('cancel-expense').onclick = () => showSection('');
-    document.getElementById('cancel-edit').onclick = () => showSection('');
+    document.getElementById('cancel-income').onclick = () => showSection('transactions');
+    document.getElementById('cancel-expense').onclick = () => showSection('transactions');
+    document.getElementById('cancel-edit').onclick = () => showSection('transactions');
 
     document.getElementById('incomeForm').onsubmit = function (e) {
         e.preventDefault();
@@ -225,7 +350,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 description: form.description.value
             });
             form.reset();
-            showSection('');
+            showSection('transactions');
         } catch (err) {
             alert(err.message);
         }
@@ -242,7 +367,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 description: form.description.value
             });
             form.reset();
-            showSection('');
+            showSection('transactions');
         } catch (err) {
             alert(err.message);
         }
@@ -259,37 +384,227 @@ document.addEventListener('DOMContentLoaded', function () {
                 category: form.category.value,
                 type: form.type.value
             });
-            showSection('');
+            showSection('transactions');
         } catch (err) {
             alert(err.message);
         }
     };
+}
 
-    // Search/filter/sort
-    const searchInput = document.createElement('input');
-    searchInput.type = 'text';
-    searchInput.placeholder = 'Search description/category...';
-    searchInput.id = 'search-input';
-    document.getElementById('records-controls').appendChild(searchInput);
+// // --- Search Logic ---
+// function setupSearch(updateUI) {
+//     const searchInput = document.getElementById('search-input');
+//     let lastSearch = '';
+//     function doSearch() {
+//         lastSearch = searchInput.value.trim();
+//         updateUI();
+//     }
+//     searchInput.oninput = doSearch;
+// }
 
-    let currentFilter = '';
-    searchInput.oninput = function () {
-        currentFilter = searchInput.value;
+// --- Sorting helper ---
+function sortTransactions(transactions, sortKey, sortDir) {
+    let sorted = [...transactions];
+    switch (sortKey) {
+        case 'date':
+            sorted.sort((a, b) => new Date(a.date) - new Date(b.date));
+            break;
+        case 'desc':
+            sorted.sort((a, b) => a.description.localeCompare(b.description));
+            break;
+        case 'amount':
+            sorted.sort((a, b) => a.amount - b.amount);
+            break;
+        default:
+            break;
+    }
+    if (sortDir === 'desc') sorted.reverse();
+    return sorted;
+}
+
+// --- Render cards/table (with highlight) ---
+function renderCards(transactions, highlight) {
+    const container = document.getElementById('cardView');
+    if (!container) return;
+    if (transactions.length === 0) {
+        container.innerHTML = `<div class="empty-state"><div class="empty-state-icon">📭</div><p>No transactions yet</p></div>`;
+        return;
+    }
+    container.innerHTML = '';
+    transactions.forEach(tx => {
+        const card = document.createElement('div');
+        card.className = `transaction-card ${tx.type}`;
+        card.innerHTML = `
+            <div class="card-header">
+                <span class="badge ${tx.type}">${tx.type}</span>
+                <span class="card-amount ${tx.type}">
+                    ${tx.type === 'income' ? '+' : '-'}$${tx.amount.toFixed(2)}
+                </span>
+            </div>
+            <div class="card-description">${highlight(tx.description)}</div>
+            <div class="card-meta">
+                <span>📁 ${highlight(tx.category || '')}</span>
+                <span>📅 ${tx.date}</span>
+                <span>🆔 ${tx.id || ''}</span>
+            </div>
+            <div class="card-actions">
+                <button class="btn btn-edit" data-id="${tx.id}">✏️ Edit</button>
+                <button class="btn btn-delete" data-id="${tx.id}">🗑️ Delete</button>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+}
+
+function renderTable(transactions, highlight) {
+    const container = document.getElementById('tableView');
+    if (!container) return;
+    if (transactions.length === 0) {
+        container.innerHTML = `<div class="empty-state"><div class="empty-state-icon">📭</div><p>No transactions yet</p></div>`;
+        return;
+    }
+    let tableHTML = `
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Date</th>
+                    <th>Description</th>
+                    <th>Category</th>
+                    <th>Type</th>
+                    <th>Amount</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+    transactions.forEach(tx => {
+        tableHTML += `
+            <tr>
+                <td>${tx.id || ''}</td>
+                <td>${tx.date}</td>
+                <td><strong>${highlight(tx.description)}</strong></td>
+                <td>📁 ${highlight(tx.category || '')}</td>
+                <td>
+                    <span class="badge ${tx.type}">${tx.type}</span>
+                </td>
+                <td>
+                    <span class="table-amount ${tx.type}">
+                        ${tx.type === 'income' ? '+' : '-'}$${tx.amount.toFixed(2)}
+                    </span>
+                </td>
+                <td>
+                    <button class="btn btn-edit" data-id="${tx.id}">✏️</button>
+                    <button class="btn btn-delete" data-id="${tx.id}">🗑️</button>
+                </td>
+            </tr>
+        `;
+    });
+    tableHTML += `</tbody></table>`;
+    container.innerHTML = tableHTML;
+}
+
+// --- Search & Sort logic ---
+function setupSearchAndSort(updateUI) {
+    const searchInput = document.getElementById('search-input');
+    const caseBox = document.getElementById('search-case');
+    const clearBtn = document.getElementById('clearSearchBtn');
+    const sortSelect = document.getElementById('sort-select');
+    const sortDirBtn = document.getElementById('sortDir');
+    let sortKey = 'date';
+    let sortDir = 'desc';
+
+    // Sort select
+    sortSelect.onchange = function () {
+        let val = sortSelect.value;
+        if (val.includes('date')) sortKey = 'date';
+        else if (val.includes('desc')) sortKey = 'desc';
+        else if (val.includes('amount')) sortKey = 'amount';
+        sortDir = val.endsWith('desc') ? 'desc' : 'asc';
+        updateUI();
+    };
+    // Sort direction toggle (for table)
+    sortDirBtn.onclick = function () {
+        sortDir = (sortDir === 'asc') ? 'desc' : 'asc';
         updateUI();
     };
 
+    // Live search
+    function triggerSearch() { updateUI(); }
+    searchInput.oninput = triggerSearch;
+    caseBox.onchange = triggerSearch;
+    clearBtn.onclick = function () {
+        searchInput.value = '';
+        triggerSearch();
+    };
+}
+
+// --- Import/Export setup ---
+function setupImportExport(updateUI) {
+  // Export button
+  document.getElementById('exportBtn').onclick = function () {
+    exportToJSON(records.getTransactions());
+  };
+
+  // Import button/file input
+  const importLabel = document.querySelector('.import-label');
+  const importInput = document.getElementById('importInput');
+  importLabel.onclick = () => importInput.click();
+  importInput.onchange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    importFromJSON(file, arr => {
+      replaceTransactions(arr); // update state, triggers UI update
+      updateUI();
+    });
+  };
+}
+
+
+// --- Main UI initialization ---
+document.addEventListener('DOMContentLoaded', async function () {
+    setupMenuToggle();
+    await loadSeedData();
+    records.initFromState();
+
+    setupForms(updateUI);
+    setupSearchAndSort(updateUI);
+    setupImportExport(updateUI);
+
     function updateUI() {
         let txs = records.getTransactions();
-        if (currentFilter) {
-            txs = filterTransactions(txs, currentFilter);
+        const searchInput = document.getElementById('search-input');
+        const caseBox = document.getElementById('search-case');
+        const pattern = searchInput ? searchInput.value : '';
+        const caseInsensitive = caseBox ? caseBox.checked : true;
+
+        // if (searchInput && searchInput.value.trim()) {
+        //     txs = filterTransactions(txs, searchInput.value.trim());
+        // }
+         const { filtered, highlight } = filterAndHighlight(txs, pattern, caseInsensitive);
+
+        // Sorting
+        const sortSelect = document.getElementById('sort-select');
+        const sortDirBtn = document.getElementById('sortDir');
+        let sortKey = 'date', sortDir = 'desc';
+        if (sortSelect) {
+            let val = sortSelect.value;
+            if (val.includes('date')) sortKey = 'date';
+            else if (val.includes('desc')) sortKey = 'desc';
+            else if (val.includes('amount')) sortKey = 'amount';
+            sortDir = val.endsWith('desc') ? 'desc' : 'asc';
         }
+        txs = sortTransactions(filtered, sortKey, sortDir);
+
         renderStats(calculateStats(txs));
-        renderCards(txs);
-        renderTable(txs);
-        renderRecent(txs);
+        renderCards(txs, highlight);
+        renderTable(txs, highlight);
+        renderCategoryChart(txs);
+        renderBalanceChart(txs);
         setupTransactionActions(txs, updateUI);
     }
 
     records.subscribe(updateUI);
+    showSection('dashboard');
     updateUI();
 });

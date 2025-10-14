@@ -34,3 +34,59 @@ export function regexSearch(transactions, pattern) {
         regex.test(tx.type)
     );
 }
+// Description/title: no leading/trailing spaces
+const descriptionRegex = /^\S(?:.*\S)?$/;
+
+// Amount: number with up to 2 decimals
+const amountRegex = /^(0|[1-9]\d*)(\.\d{1,2})?$/;
+
+// Date: YYYY-MM-DD format
+const dateRegex = /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/;
+
+// Category: letters/spaces/hyphens only
+const categoryRegex = /^[A-Za-z]+(?:[ -][A-Za-z]+)*$/;
+
+// Validate a single record object
+export function validateRecord(rec) {
+  if (typeof rec !== 'object' || rec === null) return false;
+
+  const requiredFields = [
+    'id',
+    'description',
+    'amount',
+    'category',
+    'date',
+    'createdAt',
+    'updatedAt',
+  ];
+
+  // Check all required fields exist
+  for (const field of requiredFields) {
+    if (!(field in rec)) return false;
+  }
+  // Validate field formats
+  if (!descriptionRegex.test(rec.description)) return false;
+  if (!amountRegex.test(String(rec.amount))) return false;
+  if (!categoryRegex.test(rec.category)) return false;
+  if (!dateRegex.test(rec.date)) return false;
+
+  // Optional: check timestamps are strings
+  if (typeof rec.createdAt !== 'string' || typeof rec.updatedAt !== 'string')
+    return false;
+
+  return true;
+}
+
+// Validate array of records (e.g., for import)
+export function validateRecordsArray(arr) {
+  if (!Array.isArray(arr)) return false;
+  return arr.every(validateRecord);
+}
+
+/* ---------- Export regexes (for tests/docs) ---------- */
+export const regexCatalog = {
+  descriptionRegex,
+  amountRegex,
+  dateRegex,
+  categoryRegex,
+};

@@ -5,6 +5,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Student Finance Tracker</title>
         <link rel="stylesheet" href="styles/main.css">
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     </head>
     <body>
         <!-- Skip link for keyboard users -->
@@ -28,15 +30,15 @@
                         <li><a href="#dashboard">Dashboard</a></li>
                         <li><a href="#About">About</a></li>
                         <li><a href="#transactions">Transactions</a></li>
-                        <li><a href="#Budget">Budget</a></li>
-                        <li><a href="#docs">Finance Analysis</a></li>
+                        <li><a href="#docs">Import/Export</a></li>
                         <li><a href="#settings">Settings</a></li>
                     </ul>
                 </nav>
             </div>
         </header>
         <main class="container">
-            <section>
+
+            <section id="dashboard">
                 <h2>Dashboard</h2>
                 <div class="dashboard-widgets">
                     <h3>Your Financial Overview</h3> <!--changing my heading difference in css!! -->
@@ -44,22 +46,64 @@
                     <!-- balance, income, expenses -->
                     <div class="stats-grid" id="statsGrid"></div>
                 </div>
+                <!-- finance analysis with graphs-->
+                <div>
+                    <p>Analyze your financial data with charts.</p>
+                    <div>
+                        <canvas id="balanceChart" width="400" height="200"></canvas>
+                    </div>
+                    <div>
+                        <canvas id="categoryChart" width="400" height="200"></canvas>
+                    </div>
+                </div>
+                <!-- recent transactions list -->
+                <div>
+                    <h2>Recent transactions</h2>
+                    <ul id="transaction-list"></ul>
+                </div>
+                <!-- about page -->
+                <div id="About">
+                    <h2>About</h2>
+                    <p>This Student Finance Tracker helps you manage your finances effectively. You can add income and expenses, view your balance, and analyze your spending habits.</p>
+                    <!-- my contacts(github,email) -->
+                </div>
             </section>
 
-            <!-- Records list: cards on mobile, table on desktop -->
-            <section>
+            <!-- Transactions page: cards on mobile, table on desktop -->
+            <section id="transactions">
                 <h2>Transactions</h2>
+                <!--search bar  -->
                 <div id="records-controls">
                     <input type="text" id="search-input" placeholder="Search transactions">
                     <button id="search-btn" class="btn btn-outline">Search</button>
+                    <button id="clearSearchBtn">✕</button>
+                    <label>
+                        <input type="checkbox" id="search-case" checked>
+                        Case-insensitive
+                    </label>
                 </div>
+                <div class="sort-controls">
+                    <label for="sortBy">Sort by:</label>
+                    <select id="sort-select">
+                        <option value="date-desc">Date ↓</option>
+                        <option value="date-asc">Date ↑</option>
+                        <option value="desc-asc">Description A→Z</option>
+                        <option value="desc-desc">Description Z→A</option>
+                        <option value="amount-desc">Amount ↓</option>
+                        <option value="amount-asc">Amount ↑</option>
+                    </select>
+                    <button id="sortDir" aria-label="Toggle sort direction">↑</button>
+                </div>
+                <!-- add transaction buttons -->
                 <div class="actions">
                     <button id="show-income-form" class="btn btn-primary">Add Income</button>
                     <button id="show-expense-form" class="btn btn-outline">Add Expense</button>
                 </div>
+                <!-- transactions list display -->
                 <div id="cardView" class="transaction-cards"></div>
                 <div id="tableView" class="transaction-table"></div>
             </section>
+
             <!-- add income form -->
             <section id="add-income" class="section hidden">
                 <h2>Add Income</h2>
@@ -70,6 +114,7 @@
                     <button type="submit" class="btn btn-primary">Add Income</button>
                     <button type="button" class="btn btn-outline" id="cancel-income">Cancel</button>
                 </form>
+            
             </section>
             <!-- add expense form -->
             <section id="add-expense" class="section hidden">
@@ -82,10 +127,11 @@
                     <button type="button" class="btn btn-outline" id="cancel-expense">Cancel</button>
                 </form>
             </section>
+
             <!-- Add / Edit form -->
-             <section id="edit-transaction" class="section hidden">
-            <h2>Edit Transaction</h2>
-            <form id="editForm" class="transaction-form">
+            <section id="edit-transaction" class="section hidden">
+                <h2>Edit Transaction</h2>
+                <form id="editForm" class="transaction-form">
                     <input type="hidden" name="id">
                     <input type="text" name="description" placeholder="Description" required>
                     <input type="number" name="amount" placeholder="Amount" required min="0.01" step="0.01">
@@ -99,37 +145,31 @@
                 </form>
             </section>
 
-            <!-- recent transactions list -->
-            <section>
-                <h2>Recent transactions</h2>
-                <ul id="transaction-list"></ul>
-            </section>
-
-            <!-- about page -->
-            <section>
-                <h2>About</h2>
-                <p>This Student Finance Tracker helps you manage your finances effectively. You can add income and expenses, view your balance, and analyze your spending habits.</p>
-                <!-- my contacts(github,email) -->
-            </section>
-
-            <!-- budget page -->
-            <section>
-                <h2>Budget</h2>
-                <p>Set and track your budget to stay on top of your finances.</p>
-            </section>
-
-            <!-- finance analysis page with graphs-->
-            <section>
-                <h2>Finance Analysis</h2>
-                <p>Analyze your financial data with charts.</p>
-            </section>
+            <section id="docs">
+                <div class="buttons">
+                    <button id="exportBtn" class="btn-primary">Export JSON</button>
+                    <label class="import-label">
+                    <button>Import JSON</button>
+                    <input type="file" id="importInput" accept="application/json" hidden />
+                    </label>
+                </div>
+            </section>  
 
             <!-- settings -->
-            <section>
+            <section id="settings">
                 <h2>Settings</h2>
                 <p>Customize your experience and manage your account settings.</p>
                 <div class="settings-options">
-                    <!-- light modes, currecny converter -->
+                    <!-- currency converter -->
+                    <label for="currencySelect">Preferred Currency:</label>
+                    <select id="currencySelect">
+                        <option value="USD">USD</option>
+                        <option value="RWF">EUR</option>
+                        <option value="UGX">GBP</option>
+                    </select>
+                    <!-- appearance settings -->
+                    <label for="themeToggle">Theme:</label>
+                    <button id="themeToggle">Toggle Dark/Light Mode</button>
                 </div>
             </section>
         </main>
