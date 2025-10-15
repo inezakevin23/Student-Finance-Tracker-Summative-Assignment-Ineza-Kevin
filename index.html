@@ -36,6 +36,8 @@
                 </nav>
             </div>
         </header>
+        <!-- accessibility live region -->
+        <div id="aria-live" aria-live="polite" class="sr-only"></div>
         <main class="container">
 
             <section id="dashboard">
@@ -49,11 +51,14 @@
                 <!-- finance analysis with graphs-->
                 <div>
                     <p>Analyze your financial data with charts.</p>
-                    <div>
+                    <div class="chart-container">
                         <canvas id="balanceChart" width="400" height="200"></canvas>
                     </div>
-                    <div>
+                    <div class="chart-container">
                         <canvas id="categoryChart" width="400" height="200"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="incomeCategoryChart"></canvas>
                     </div>
                 </div>
                 <!-- recent transactions list -->

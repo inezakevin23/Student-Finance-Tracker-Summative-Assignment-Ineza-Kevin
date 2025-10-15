@@ -1,9 +1,17 @@
 import records from './state.js';
 import {  filterAndHighlight } from './search.js';
-import { renderCategoryChart, renderBalanceChart } from './chart.js';
+import { renderCategoryChart, renderBalanceChart, renderIncomeCategoryChart } from './chart.js';
 import { state, loadSeedData, replaceTransactions, setCurrency, setExchangeRate } from './state.js';
 import { loadThemeFromLocalStorage, saveThemeToLocalStorage } from './storage.js';
 import { exportToJSON } from './storage.js';
+
+function announce(msg) {
+  const live = document.getElementById('aria-live');
+  if (live) {
+    live.textContent = msg;
+    setTimeout(() => { live.textContent = ''; }, 4000);
+  }
+}
 
 // --- Utility: Format amount in chosen currency ---
 function formatAmount(amount) {
@@ -28,6 +36,7 @@ function setupThemeToggle() {
     btn.onclick = () => {
         const newTheme = document.body.classList.contains('theme-dark') ? 'light' : 'dark';
         applyTheme(newTheme);
+        announce("theme changed");
     };
 }
 
@@ -102,20 +111,6 @@ function setupMenuToggle() {
     });
 }
 
-// // Smooth scroll for navigation
-// function navLinks () {
-//     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-//   anchor.addEventListener("click", function (e) {
-//     e.preventDefault();
-//     const target = document.querySelector(this.getAttribute("href"));
-//     if (target) {
-//       target.scrollIntoView({ behavior: "smooth" });
-//       navMenu.classList.remove("active");
-//     }
-//   });
-// });
-// }
-
 // --- show/hide section ---
 function showSection(id) {
     document.querySelectorAll('.section').forEach(section => {
@@ -148,112 +143,10 @@ function setupTransactionActions(transactions, updateUI) {
             if (confirm('Are you sure you want to delete this transaction?')) {
                 records.deleteTransactionById(id);
             }
+            announce("Transaction deleted");
         };
     });
 }
-
-
-// // --- Main UI initialization ---
-// document.addEventListener('DOMContentLoaded', async function () {
-//     setupMenuToggle();
-//     navLinks();
-//     // 1. Load seed.json
-//     await loadSeedData(); 
-//     records.initFromState(); 
-//     // Update UI when user selects a new currency
-//     document.getElementById('currencySelect').onchange = function(e) {
-//     updateCurrency(e.target.value);
-//     updateUI(); // refresh all amounts
- 
-
-//     // Set up forms
-//     document.getElementById('show-income-form').onclick = () => showSection('add-income');
-//     document.getElementById('show-expense-form').onclick = () => showSection('add-expense');
-//     document.getElementById('cancel-income').onclick = () => showSection('');
-//     document.getElementById('cancel-expense').onclick = () => showSection('');
-//     document.getElementById('cancel-edit').onclick = () => showSection('');
-
-//     document.getElementById('incomeForm').onsubmit = function (e) {
-//         e.preventDefault();
-//         const form = e.target;
-//         try {
-//             records.addTransaction({
-//                 type: 'income',
-//                 amount: parseFloat(form.amount.value),
-//                 category: form.category.value,
-//                 description: form.description.value
-//             });
-//             form.reset();
-//             showSection('');
-//         } catch (err) {
-//             alert(err.message);
-//         }
-//     };
-
-//     document.getElementById('expenseForm').onsubmit = function (e) {
-//         e.preventDefault();
-//         const form = e.target;
-//         try {
-//             records.addTransaction({
-//                 type: 'expense',
-//                 amount: parseFloat(form.amount.value),
-//                 category: form.category.value,
-//                 description: form.description.value
-//             });
-//             form.reset();
-//             showSection('');
-//         } catch (err) {
-//             alert(err.message);
-//         }
-//     };
-
-//     document.getElementById('editForm').onsubmit = function (e) {
-//         e.preventDefault();
-//         const form = e.target;
-//         try {
-//             records.updateTransaction({
-//                 id: form.id.value,
-//                 description: form.description.value,
-//                 amount: parseFloat(form.amount.value),
-//                 category: form.category.value,
-//                 type: form.type.value
-//             });
-//             showSection('');
-//         } catch (err) {
-//             alert(err.message);
-//         }
-//     };
-
-//     // Search/filter/sort
-//     const searchInput = document.createElement('input');
-//     searchInput.type = 'text';
-//     searchInput.placeholder = 'Search description/category...';
-//     searchInput.id = 'search-input';
-//     document.getElementById('records-controls').appendChild(searchInput);
-
-//     let currentFilter = '';
-//     searchInput.oninput = function () {
-//         currentFilter = searchInput.value;
-//         updateUI();
-//     };
-
-//     function updateUI() {
-//         let txs = records.getTransactions();
-//         if (currentFilter) {
-//             txs = filterTransactions(txs, currentFilter);
-//         }
-//         renderStats(calculateStats(txs));
-//         renderCards(txs);
-//         renderTable(txs);
-//         renderRecent(txs);
-//         renderBalanceChart(txs);
-//         renderCategoryChart(txs);
-//         setupTransactionActions(txs, updateUI);
-//     }
-
-//     records.subscribe(updateUI);
-//     updateUI();
-// }});
 
 // --- Forms: Add Income/Expense ---
 function setupForms(updateUI) {
@@ -457,6 +350,7 @@ function setupImportExport(updateUI) {
   // Export button
   document.getElementById('exportBtn').onclick = function () {
     exportToJSON(records.getTransactions());
+    announce("Exported transactions as JSON.");
   };
 
   // Import button/file input
@@ -550,6 +444,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         renderTable(txs, highlight);
         renderCategoryChart(txs);
         renderBalanceChart(txs);
+        renderIncomeCategoryChart(txs);
         renderRecent(txs);
         setupTransactionActions(txs, updateUI);
         setupCurrencySettings(updateUI);
