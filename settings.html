@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Student Finance Tracker</title>
+    <link rel="stylesheet" href="styles/main.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+  <body>
+    <!-- Skip link for keyboard users -->
+    <a
+      href="#main-content"
+      class="skip-link"
+      style="position: absolute; left: -9999px; top: auto"
+      onfocus="this.style.left='1rem'; this.style.top='1rem';"
+      onblur="this.style.left='-9999px';"
+      >Skip to main content</a
+    >
+
+    <header>
+      <div class="container header-flex">
+        <!-- Mobile Menu Button (only visible on small screens) -->
+        <button
+          id="menu-toggle"
+          class="menu-toggle"
+          aria-label="Toggle navigation menu"
+        >
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+        <div class="Header-text">
+          <h1>Student Finance Tracker</h1>
+        </div>
+        <nav role="navigation" aria-label="Main navigation">
+          <ul class="nav-menu">
+            <li><a href="index.html#dashboard">Dashboard</a></li>
+            <li><a href="index.html#About">About</a></li>
+            <li><a href="transactions.html">Transactions</a></li>
+            <li><a href="import-export.html">Import/Export</a></li>
+            <li><a href="settings.html">Settings</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+    <!-- accessibility live region -->
+    <div id="aria-live" aria-live="polite" class="sr-only"></div>
+    <main class="container" class="main-content">
+      <!-- settings page-->
+      <section id="settings">
+        <h2>Settings</h2>
+        <p>Customize your experience and manage your account settings.</p>
+        <div class="settings-options">
+          <!-- currency converter -->
+          <label for="currencySelect">Preferred Currency:</label>
+          <select id="currencySelect">
+            <option value="USD">USD</option>
+            <option value="RWF">RWF</option>
+            <option value="UGX">UGX</option>
+          </select>
+          <div id="manualRates"></div>
+          <!-- appearance settings -->
+          <label for="themeToggle">Theme:</label>
+          <button id="themeToggle">Toggle Dark/Light Mode</button>
+        </div>
+      </section>
+    </main>
+    <footer class="container">
+      <p>&copy; 2025 Student Finance Tracker</p>
+      <p>Created by Ineza Kevin</p>
+    </footer>
+    <script type="module" src="scripts/ui.js"></script>
+  </body>
+</html>

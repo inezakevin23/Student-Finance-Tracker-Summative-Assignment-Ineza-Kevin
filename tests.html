@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Student Finance Tracker - Regex Validator Test</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        margin: 2rem;
+        background-color: #fdf6e3;
+      }
+      h1 {
+        font-size: 1.3rem;
+        margin-bottom: 1rem;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        margin-top: 1rem;
+      }
+      th,
+      td {
+        border: 1px solid #ccc;
+        padding: 0.5rem;
+        text-align: left;
+      }
+      th {
+        background-color: #eee;
+      }
+      .pass {
+        color: green;
+        font-weight: bold;
+      }
+      .fail {
+        color: red;
+        font-weight: bold;
+      }
+      button {
+        margin-top: 1rem;
+        padding: 0.4rem 0.8rem;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Student Finance Tracker - Regex Validator Test</h1>
+    <p>Running sample test cases for validators.</p>
+
+    <div id="resultPage">
+      <h2>Test Results</h2>
+      <div id="results" aria-live="polite"></div>
+      <button id="runTestsBtn">Run Tests</button>
+    </div>
+
+    <script type="module">
+      import {
+        validateDescription,
+        validateAmount,
+        validateCategory,
+        regexCatalog,
+      } from "./scripts/validators.js";
+
+      // Sample test cases
+      const testCases = {
+        description: [
+          { value: "Lunch at cafeteria", expect: true },
+          { value: "  Too much space", expect: false },
+          { value: "No", expect: false },
+          { value: "food food", expect: false },
+          { value: "Valid Title", expect: true },
+        ],
+        amount: [
+          { value: "12.50", expect: true },
+          { value: "0", expect: false },
+          { value: "-5.00", expect: false },
+          { value: "003", expect: false },
+          { value: "100.123", expect: false },
+          { value: "25", expect: true },
+        ],
+        date: [
+          { value: "2025-10-16", expect: true },
+          { value: "2025-02-30", expect: false },
+          { value: "16-10-2025", expect: false },
+          { value: "20251016", expect: false },
+        ],
+        category: [
+          { value: "Food", expect: true },
+          { value: "Food & Drinks", expect: false },
+          { value: "Books", expect: true },
+          { value: "Internership-2025", expect: false },
+          { value: "Coffee break", expect: true },
+        ],
+        advanced: [
+          { value: "food food", expect: false },
+          { value: "lunch lunch", expect: false },
+          { value: "Lunch at cafeteria", expect: true },
+        ],
+      };
+
+      function escapeHTML(str) {
+        return String(str).replace(
+          /[&<>"']/g,
+          (s) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#39;",
+            }[s])
+        );
+      }
+
+      function runTests() {
+        let html =
+          "<table><tr><th>Field</th><th>Input</th><th>Result</th></tr>";
+
+        // Description
+        testCases.description.forEach((tc) => {
+          const result =
+            validateDescription(tc.value) === tc.expect ? "pass" : "fail";
+          html += `<tr><td>Description</td><td>${escapeHTML(
+            tc.value
+          )}</td><td class="${result}">${
+            result === "pass" ? "✅" : "❌"
+          }</td></tr>`;
+        });
+
+        // Amount
+        testCases.amount.forEach((tc) => {
+          const result =
+            validateAmount(tc.value) === tc.expect ? "pass" : "fail";
+          html += `<tr><td>Amount</td><td>${escapeHTML(
+            tc.value
+          )}</td><td class="${result}">${
+            result === "pass" ? "✅" : "❌"
+          }</td></tr>`;
+        });
+
+        // Date
+        testCases.date.forEach((tc) => {
+          const result =
+            regexCatalog.dateRegex.test(tc.value) === tc.expect
+              ? "pass"
+              : "fail";
+          html += `<tr><td>Date</td><td>${escapeHTML(
+            tc.value
+          )}</td><td class="${result}">${
+            result === "pass" ? "✅" : "❌"
+          }</td></tr>`;
+        });
+
+        // Category
+        testCases.category.forEach((tc) => {
+          const result =
+            validateCategory(tc.value) === tc.expect ? "pass" : "fail";
+          html += `<tr><td>Category</td><td>${escapeHTML(
+            tc.value
+          )}</td><td class="${result}">${
+            result === "pass" ? "✅" : "❌"
+          }</td></tr>`;
+        });
+
+        // Advanced (no repeated word)
+        const repeatedWordRegex = /\b(\w+)\b\s+\1\b/i;
+        testCases.advanced.forEach((tc) => {
+          const isValid = !repeatedWordRegex.test(tc.value);
+          const result = isValid === tc.expect ? "pass" : "fail";
+          html += `<tr><td>Advanced</td><td>${escapeHTML(
+            tc.value
+          )}</td><td class="${result}">${
+            result === "pass" ? "✅" : "❌"
+          }</td></tr>`;
+        });
+
+        html += "</table>";
+        document.getElementById("results").innerHTML = html;
+      }
+
+      document.getElementById("runTestsBtn").onclick = runTests;
+    </script>
+  </body>
+</html>

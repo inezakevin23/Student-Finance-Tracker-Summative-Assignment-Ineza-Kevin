@@ -1,188 +1,117 @@
 <!DOCTYPE html>
-<html lang="en">    
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Student Finance Tracker</title>
-        <link rel="stylesheet" href="styles/main.css">
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Student Finance Tracker</title>
+    <link rel="stylesheet" href="styles/main.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+  <body>
+    <!-- Skip link for keyboard users -->
+    <a
+      href="#main-content"
+      class="skip-link"
+      style="position: absolute; left: -9999px; top: auto"
+      onfocus="this.style.left='1rem'; this.style.top='1rem';"
+      onblur="this.style.left='-9999px';"
+      >Skip to main content</a
+    >
 
-    </head>
-    <body>
-        <!-- Skip link for keyboard users -->
-        <a href="#main-content" class="skip-link" style="position:absolute;left:-9999px;top:auto;"
-        onfocus="this.style.left='1rem'; this.style.top='1rem';" onblur="this.style.left='-9999px';">Skip to main content</a>
-
-        <header>
-
-            <div class="container header-flex">
-                <!-- Mobile Menu Button (only visible on small screens) -->
-                <button id="menu-toggle" class="menu-toggle" aria-label="Toggle navigation menu">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </button>
-                <div class="Header-text">
-                    <h1>Student Finance Tracker</h1>
-                </div>
-                <nav role="navigation" aria-label="Main navigation">
-                    <ul class="nav-menu">
-                        <li><a href="#dashboard">Dashboard</a></li>
-                        <li><a href="#About">About</a></li>
-                        <li><a href="#transactions">Transactions</a></li>
-                        <li><a href="#docs">Import/Export</a></li>
-                        <li><a href="#settings">Settings</a></li>
-                    </ul>
-                </nav>
-            </div>
-        </header>
-        <!-- accessibility live region -->
-        <div id="aria-live" aria-live="polite" class="sr-only"></div>
-        <main class="container">
-
-            <section id="dashboard">
-                <h2>Dashboard</h2>
-                <div class="dashboard-widgets">
-                    <h3>Your Financial Overview</h3> <!--changing my heading difference in css!! -->
-                    <div id="currentDateTime"></div>
-                    <!-- balance, income, expenses -->
-                    <div class="stats-grid" id="statsGrid"></div>
-                </div>
-                <!-- finance analysis with graphs-->
-                <div>
-                    <p>Analyze your financial data with charts.</p>
-                    <div class="chart-container">
-                        <canvas id="balanceChart" width="400" height="200"></canvas>
-                    </div>
-                    <div class="chart-container">
-                        <canvas id="categoryChart" width="400" height="200"></canvas>
-                    </div>
-                    <div class="chart-container">
-                        <canvas id="incomeCategoryChart"></canvas>
-                    </div>
-                </div>
-                <!-- recent transactions list -->
-                <div>
-                    <h2>Recent transactions</h2>
-                    <ul id="transaction-list"></ul>
-                </div>
-                <!-- about page -->
-                <div id="About">
-                    <h2>About</h2>
-                    <p>This Student Finance Tracker helps you manage your finances effectively. You can add income and expenses, view your balance, and analyze your spending habits.</p>
-                    <!-- my contacts(github,email) -->
-                </div>
-            </section>
-
-            <!-- Transactions page: cards on mobile, table on desktop -->
-            <section id="transactions">
-                <h2>Transactions</h2>
-                <!--search bar  -->
-                <div id="records-controls">
-                    <input type="text" id="search-input" placeholder="Search transactions">
-                    <button id="search-btn" class="btn btn-outline">Search</button>
-                    <button id="clearSearchBtn">✕</button>
-                    <label>
-                        <input type="checkbox" id="search-case" checked>
-                        Case-insensitive
-                    </label>
-                </div>
-                <div class="sort-controls">
-                    <label for="sortBy">Sort by:</label>
-                    <select id="sort-select">
-                        <option value="date-desc">Date ↓</option>
-                        <option value="date-asc">Date ↑</option>
-                        <option value="desc-asc">Description A→Z</option>
-                        <option value="desc-desc">Description Z→A</option>
-                        <option value="amount-desc">Amount ↓</option>
-                        <option value="amount-asc">Amount ↑</option>
-                    </select>
-                    <button id="sortDir" aria-label="Toggle sort direction">↑</button>
-                </div>
-                <!-- add transaction buttons -->
-                <div class="actions">
-                    <button id="show-income-form" class="btn btn-primary">Add Income</button>
-                    <button id="show-expense-form" class="btn btn-outline">Add Expense</button>
-                </div>
-                <!-- transactions list display -->
-                <div id="cardView" class="transaction-cards"></div>
-                <div id="tableView" class="transaction-table"></div>
-            </section>
-
-            <!-- add income form -->
-            <section id="add-income" class="section hidden">
-                <h2>Add Income</h2>
-                <form id="incomeForm" class="transaction-form">
-                    <input type="text" name="description" placeholder="Description" required>
-                    <input type="number" name="amount" placeholder="Amount" required min="0.01" step="0.01">
-                    <input type="text" name="category" placeholder="Category">
-                    <button type="submit" class="btn btn-primary">Add Income</button>
-                    <button type="button" class="btn btn-outline" id="cancel-income">Cancel</button>
-                </form>
-            
-            </section>
-            <!-- add expense form -->
-            <section id="add-expense" class="section hidden">
-                <h2>Add Expense</h2>
-                <form id="expenseForm" class="transaction-form">
-                    <input type="text" name="description" placeholder="Description" required>
-                    <input type="number" name="amount" placeholder="Amount" required min="0.01" step="0.01">
-                    <input type="text" name="category" placeholder="Category">
-                    <button type="submit" class="btn btn-primary">Add Expense</button>
-                    <button type="button" class="btn btn-outline" id="cancel-expense">Cancel</button>
-                </form>
-            </section>
-
-            <!-- Add / Edit form -->
-            <section id="edit-transaction" class="section hidden">
-                <h2>Edit Transaction</h2>
-                <form id="editForm" class="transaction-form">
-                    <input type="hidden" name="id">
-                    <input type="text" name="description" placeholder="Description" required>
-                    <input type="number" name="amount" placeholder="Amount" required min="0.01" step="0.01">
-                    <input type="text" name="category" placeholder="Category">
-                    <select name="type" required>
-                        <option value="income">Income</option>
-                        <option value="expense">Expense</option>
-                    </select>
-                    <button type="submit" class="btn btn-primary">Save Changes</button>
-                    <button type="button" class="btn btn-outline" id="cancel-edit">Cancel</button>
-                </form>
-            </section>
-
-            <section id="docs">
-                <div class="buttons">
-                    <button id="exportBtn" class="btn-primary">Export JSON</button>
-                    <label class="import-label">
-                    <button>Import JSON</button>
-                    <input type="file" id="importInput" accept="application/json" hidden />
-                    </label>
-                </div>
-            </section>  
-
-            <!-- settings -->
-            <section id="settings">
-                <h2>Settings</h2>
-                <p>Customize your experience and manage your account settings.</p>
-                <div class="settings-options">
-                    <!-- currency converter -->
-                    <label for="currencySelect">Preferred Currency:</label>
-                    <select id="currencySelect">
-                        <option value="USD">USD</option>
-                        <option value="RWF">RWF</option>
-                        <option value="UGX">UGX</option>
-                    </select>
-                    <div id="manualRates"></div>
-                    <!-- appearance settings -->
-                    <label for="themeToggle">Theme:</label>
-                    <button id="themeToggle">Toggle Dark/Light Mode</button>
-                </div>
-            </section>
-        </main>
-        <footer class="container">
-            <p>&copy; 2025 Student Finance Tracker</p>
-            <p>Created by Ineza Kevin</p>
-        </footer>
-        <script type="module" src="scripts/ui.js"></script>
-    </body>
+    <header>
+      <div class="container header-flex">
+        <div
+          id="themeToggle"
+          class="btn btn-outline hidden"
+          aria-label="Toggle dark/light mode"
+        ></div>
+        <!-- Mobile Menu Button (only visible on small screens) -->
+        <button
+          id="menu-toggle"
+          class="menu-toggle"
+          aria-label="Toggle navigation menu"
+        >
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+        <div class="Header-text">
+          <h1>Student Finance Tracker</h1>
+        </div>
+        <nav role="navigation" aria-label="Main navigation">
+          <ul class="nav-menu">
+            <li><a href="index.html">Dashboard</a></li>
+            <li><a href="index.html#About">About</a></li>
+            <li><a href="transactions.html">Transactions</a></li>
+            <li><a href="import-export.html">Import/Export</a></li>
+            <li><a href="settings.html">Settings</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+    <!-- accessibility live region -->
+    <div id="aria-live" aria-live="polite" class="sr-only"></div>
+    <main class="container" class="main-content">
+      <!-- dashboard stats -->
+      <section id="dashboard">
+        <h2>Dashboard</h2>
+        <div class="dashboard-widgets">
+          <h3>Your Financial Overview</h3>
+          <div id="currentDateTime"></div>
+          <div class="stats-grid" id="statsGrid"></div>
+        </div>
+        <!-- finance analysis with graphs-->
+        <div>
+          <p>Analyze your financial data with charts.</p>
+          <div
+            class="chart-container"
+            aria-label="Balance over time graph"
+            role="img"
+          >
+            <canvas id="balanceChart" width="400" height="200"></canvas>
+          </div>
+          <div
+            class="chart-container"
+            aria-label="Expenses by category graph"
+            role="img"
+          >
+            <canvas id="categoryChart" width="400" height="200"></canvas>
+          </div>
+          <div
+            class="chart-container"
+            aria-label="Income by category graph"
+            role="img"
+          >
+            <canvas id="incomeCategoryChart"></canvas>
+          </div>
+        </div>
+      </section>
+      <section>
+        <!-- recent transactions list -->
+        <div>
+          <h2>Recent transactions</h2>
+          <ul id="transaction-list"></ul>
+        </div>
+      </section>
+      <section>
+        <!-- about page -->
+        <div id="About">
+          <h2>About</h2>
+          <p>
+            This Student Finance Tracker helps you manage your finances
+            effectively. You can add income and expenses, view your balance, and
+            analyze your spending habits.
+          </p>
+          <h3>Contact</h3>
+          <p>Email: k.ineza@alustudent.com</p>
+          <p>Github: inezakevin23</p>
+        </div>
+      </section>
+    </main>
+    <footer class="container">
+      <p>&copy; 2025 Student Finance Tracker</p>
+      <p>Created by Ineza Kevin</p>
+    </footer>
+    <script type="module" src="scripts/ui.js"></script>
+  </body>
 </html>

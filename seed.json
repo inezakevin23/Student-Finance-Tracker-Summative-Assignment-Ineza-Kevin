@@ -1,80 +1,102 @@
 [
-{
-    "id":"0001",
-    "description":"this is a sample description",
-    "amount":1000,
-    "date":"2025-10-11",
-    "category":"Sample Category",
-    "updated_at":"2025-10-11T10:00:00Z",
-    "created_at":"2025-10-11T10:00:00Z",
-    "type":"income"
-},
-{
-    "id":"0002",
-    "description":"this is a sample description",
-    "amount":500,
-    "date":"2025-10-12",
-    "category":"Sample Category",
-    "updated_at":"2025-10-12T10:00:00Z",
-    "created_at":"2025-10-12T10:00:00Z",
-    "type":"expense"
-},
-{
-    "id":"0003",
-    "description":"this is a sample description",
-    "amount":200,
-    "date":"2025-10-13",
-    "category":"Sample Category",
-    "updated_at":"2025-10-13T10:00:00Z",
-    "created_at":"2025-10-13T10:00:00Z",
-    "type":"expense"
-},
-{
-    "id":"0004",
-    "description":"this is a sample description",
-    "amount":1500,
-    "date":"2025-10-14",
-    "category":"Sample Category",
-    "updated_at":"2025-10-14T10:00:00Z",
-    "created_at":"2025-10-14T10:00:00Z",
-    "type":"income"
-},
-{
-    "id":"0005",
-    "description":"this is a sample description",
-    "amount":300,
-    "date":"2025-10-15",
-    "category":"Sample Category",
-    "updated_at":"2025-10-15T10:00:00Z",
-    "created_at":"2025-10-15T10:00:00Z",
-    "type":"expense"
-},
-{
-    "id":"0006",
-    "description":"this is a sample description",
-    "amount":800,
-    "date":"2025-10-16",
-    "category":"Sample Category",
-    "updated_at":"2025-10-16T10:00:00Z",
-    "created_at":"2025-10-16T10:00:00Z",
-    "type":"expense"
-},
-{    "id":"0007",
-    "description":"this is a sample description",
-    "amount":400,
-    "date":"2025-10-17",
-    "category":"Sample Category",
-    "updated_at":"2025-10-17T10:00:00Z",
-    "created_at":"2025-10-17T10:00:00Z",
-    "type":"expense"
-},
-{    "id":"0008",
-    "description":"this is a sample description",
-    "amount":600,
-    "date":"2025-10-18",
-    "category":"Sample Category",
-    "updated_at":"2025-10-18T10:00:00Z",
-    "created_at":"2025-10-18T10:00:00Z",
-    "type":"expense"
-}
+  {
+    "id": "1",
+    "description": "Lunch at cafeteria",
+    "amount": 12,
+    "date": "2025-10-11",
+    "category": "Food",
+    "updatedAt": "2025-10-11T10:00:00Z",
+    "createdAt": "2025-10-11T10:00:00Z",
+    "type": "expense"
+  },
+  {
+    "id": "2",
+    "description": "Chemistry textbook",
+    "amount": 50,
+    "date": "2025-10-12",
+    "category": "Book",
+    "updatedAt": "2025-10-12T10:00:00Z",
+    "createdAt": "2025-10-12T10:00:00Z",
+    "type": "expense"
+  },
+  {
+    "id": "3",
+    "description": "Bus pass",
+    "amount": 30,
+    "date": "2025-10-13",
+    "category": "Transport",
+    "updatedAt": "2025-10-13T10:00:00Z",
+    "createdAt": "2025-10-13T10:00:00Z",
+    "type": "expense"
+  },
+  {
+    "id": "4",
+    "description": "Coffee with friends",
+    "amount": 10,
+    "date": "2025-10-14",
+    "category": "Entertainment",
+    "updatedAt": "2025-10-14T10:00:00Z",
+    "createdAt": "2025-10-14T10:00:00Z",
+    "type": "expense"
+  },
+  {
+    "id": "5",
+    "description": "House rent",
+    "amount": 300,
+    "date": "2025-10-15",
+    "category": "House",
+    "updatedAt": "2025-10-15T10:00:00Z",
+    "createdAt": "2025-10-15T10:00:00Z",
+    "type": "expense"
+  },
+  {
+    "id": "6",
+    "description": "Water bills",
+    "amount": 80,
+    "date": "2025-10-16",
+    "category": "Bills",
+    "updatedAt": "2025-10-16T10:00:00Z",
+    "createdAt": "2025-10-16T10:00:00Z",
+    "type": "expense"
+  },
+  {
+    "id": "7",
+    "description": "photography earning",
+    "amount": 400,
+    "date": "2025-10-17",
+    "category": "Business",
+    "updatedAt": "2025-10-17T10:00:00Z",
+    "createdAt": "2025-10-17T10:00:00Z",
+    "type": "income"
+  },
+  {
+    "id": "8",
+    "description": "Scholarship stipend",
+    "amount": 600,
+    "date": "2025-10-18",
+    "category": "Education",
+    "updatedAt": "2025-10-18T10:00:00Z",
+    "createdAt": "2025-10-18T10:00:00Z",
+    "type": "income"
+  },
+  {
+    "id": "9",
+    "description": "Internership earnings",
+    "amount": 200,
+    "date": "2025-10-18",
+    "category": "Internership",
+    "updatedAt": "2025-10-19T10:00:00Z",
+    "createdAt": "2025-10-19T10:00:00Z",
+    "type": "income"
+  },
+  {
+    "id": "10",
+    "description": "Bought t-shirt",
+    "amount": 17,
+    "date": "2025-10-18",
+    "category": "Clothes",
+    "updatedAt": "2025-10-20T10:00:00Z",
+    "createdAt": "2025-10-20T10:00:00Z",
+    "type": "expense"
+  }
 ]
