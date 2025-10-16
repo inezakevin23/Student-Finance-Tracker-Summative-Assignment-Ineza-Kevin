@@ -72,4 +72,4 @@
 
 - [Live Deployment](https://inezakevin23.github.io/Student-Finance-Tracker-Summative-Assignment-Ineza-Kevin/)
 - [Regex Validators Test Page](./tests.html)
-- [Main App](./index.html)
+- [Main App](./index.html) -[Demo video](https://youtu.be/wS39qfVOh9o)
