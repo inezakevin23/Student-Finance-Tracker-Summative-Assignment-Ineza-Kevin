@@ -16,7 +16,7 @@ import {
   loadThemeFromLocalStorage,
   saveThemeToLocalStorage,
 } from "./storage.js";
-import { exportToJSON } from "./storage.js";
+import { exportToJSON, importFromJSON } from "./storage.js";
 
 function getPageType() {
   if (document.getElementById("dashboard")) return "dashboard";
@@ -416,8 +416,9 @@ function setupImportExport(updateUI) {
     const file = e.target.files[0];
     if (!file) return;
     importFromJSON(file, (arr) => {
-      replaceTransactions(arr); // update state, triggers UI update
-      updateUI();
+      state.transactions = state.transactions.concat(arr);
+      records.initFromState();
+      if (typeof updateUI === "function") updateUI();
     });
   };
 }
