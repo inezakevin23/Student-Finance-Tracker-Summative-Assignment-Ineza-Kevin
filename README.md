@@ -70,6 +70,6 @@
 
 ## Quick Links
 
+- [Live Deployment](https://inezakevin23.github.io/Student-Finance-Tracker-Summative-Assignment-Ineza-Kevin/)
 - [Regex Validators Test Page](./tests.html)
 - [Main App](./index.html)
-- [Source Code](./scripts/)
